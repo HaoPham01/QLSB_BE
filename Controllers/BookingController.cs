@@ -218,6 +218,8 @@ namespace QLSB_APIs.Controllers
             return Ok(bookings);
         }
 
+
+
         [HttpGet("cancel-status-booking/{bookingId}")]
         public IActionResult CancelStatusBooking(int bookingId)
         {
@@ -242,6 +244,65 @@ namespace QLSB_APIs.Controllers
             }); ;
         }
 
+
+
+
+        //STAFF-BOOKING--------------------------------------------------------------------
+        [HttpGet("staff-get-booking")]
+        public IActionResult StaffGetBooking()
+        {
+            DateTime today = DateTime.Today;
+            var firstFieldId = _dbContext.Footballfields
+                .Where(field => field.Status == 1) // Chọn chỉ các FieldId có trạng thái bằng 1
+                .OrderBy(field => field.FieldId) // Sắp xếp theo FieldId tăng dần
+                .Select(field => field.FieldId) // Chọn chỉ mục FieldId
+                .FirstOrDefault(); // Lấy FieldId đầu tiên
+            var bookings = _dbContext.Bookings
+                    .Join(
+                        _dbContext.Users,
+                        booking => booking.UserId,
+                        user => user.UserId,
+                        (booking, user) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.CreateDate,
+                            booking.UpdateDate,
+                            user.FullName,
+                            user.Phone
+                        }
+                    )
+                    .Join(
+                        _dbContext.Footballfields,
+                        booking => booking.FieldId,
+                        footballfield => footballfield.FieldId,
+                        (booking, footballfield) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.CreateDate,
+                            booking.UpdateDate,
+                            booking.FullName,
+                            booking.Phone,
+                            footballfield.FieldName, // Thêm trường tên sân bóng
+                                                     // Thêm các trường khác của bảng FootballField nếu cần
+                        }
+                    )
+                    .Where(item => item.Status != 0 && item.FieldId == firstFieldId && item.StartTime.Value.Date == today)
+                    .OrderBy(item => item.StartTime) // Sắp xếp theo StartTime
+                    .ToList();
+            return Ok(bookings);
+        }
     }
 
 }
