@@ -26,8 +26,8 @@ namespace QLSB_APIs.Controllers
             _config = config;
             _httpContextAccessor = httpContextAccessor;
         }
-        [HttpGet("get-url/{typePaymentVN}/{orderCode}")]
-        public IActionResult UrlPayment(int typePaymentVN, int orderCode)
+        [HttpGet("get-url/{typePaymentVN}/{orderCode}/{typePrice}")]
+        public IActionResult UrlPayment(int typePaymentVN, int orderCode, string typePrice)
         {
             HttpContext httpContext = _httpContextAccessor.HttpContext;
             var urlPayment = "";
@@ -40,6 +40,9 @@ namespace QLSB_APIs.Controllers
 
             VnPayLibrary vnpay = new VnPayLibrary();
             var price = (long)order.PriceBooking * 100;
+            if(typePrice == "1") {
+                price = price * 30 /100;
+            }
             vnpay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
             vnpay.AddRequestData("vnp_Command", "pay");
             vnpay.AddRequestData("vnp_TmnCode", vnp_TmnCode);
