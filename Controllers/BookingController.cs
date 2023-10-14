@@ -35,54 +35,80 @@ namespace QLSB_APIs.Controllers
                 .Select(field => field.FieldId) // Chọn chỉ mục FieldId
                 .FirstOrDefault(); // Lấy FieldId đầu tiên
 
-            var booking = _dbContext.Bookings
+            var bookings = _dbContext.Bookings
                 .Join(
                     _dbContext.Users,
                     booking => booking.UserId,
                     user => user.UserId,
-                    (booking, user) => new
+                    (booking, user) => new BookingColorDTO
                     {
-                        booking.BookingId,
-                        booking.UserId,
-                        booking.FieldId,
-                        booking.PriceBooking,
-                        start = booking.StartTime,
-                        end = booking.EndTime,
-                        booking.Status,
-                        booking.CreateDate,
-                        booking.UpdateDate,
-                        title = user.FullName
+                        BookingId = booking.BookingId,
+                        UserId = booking.UserId,
+                        FieldId = booking.FieldId,
+                        PriceBooking = booking.PriceBooking,
+                        Start = booking.StartTime,
+                        End = booking.EndTime,
+                        Status = booking.Status,
+                        CreateDate = booking.CreateDate,
+                        UpdateDate = booking.UpdateDate,
+                        Title = user.FullName
                     }
-                ).Where(item => item.Status == 1 && item.FieldId == firstFieldId)
+                ).Where(item => item.Status != 0 && item.FieldId == firstFieldId)
                 .ToList();
-            return Ok(booking);
+
+            foreach (var booking in bookings)
+            {
+                if (booking.Status == 1)
+                {
+                    booking.Color = "#04BFBF";
+                }
+                else if (booking.Status == -1)
+                {
+                    booking.Color = "#F28705";
+                }
+            }
+            return Ok(bookings);
         }
 
         [HttpGet("get-booking/{fieldId}")]
         public IActionResult GetBookingFromFieldId(int fieldId)
         {
-            var booking = _dbContext.Bookings
+            var bookings = _dbContext.Bookings
                 .Join(
                     _dbContext.Users,
                     booking => booking.UserId,
                     user => user.UserId,
-                    (booking, user) => new
+                    (booking, user) => new BookingColorDTO
                     {
-                        booking.BookingId,
-                        booking.UserId,
-                        booking.FieldId,
-                        booking.PriceBooking,
-                        start = booking.StartTime,
-                        end =  booking.EndTime,
-                        booking.Status,
-                        booking.CreateDate,
-                        booking.UpdateDate,
-                        title = user.FullName
+                        BookingId = booking.BookingId,
+                        UserId = booking.UserId,
+                        FieldId = booking.FieldId,
+                        PriceBooking = booking.PriceBooking,
+                        Start = booking.StartTime,
+                        End = booking.EndTime,
+                        Status = booking.Status,
+                        CreateDate = booking.CreateDate,
+                        UpdateDate = booking.UpdateDate,
+                        Title = user.FullName
                     }
-                ).Where(item => item.Status == 1 && item.FieldId == fieldId)
+                ).Where(item => item.Status != 0 && item.FieldId == fieldId)
                 .ToList();
-                return Ok(booking);
+
+            foreach (var booking in bookings)
+            {
+                if (booking.Status == 1)
+                {
+                    booking.Color = "#04BFBF";
+                }
+                else if (booking.Status == -1)
+                {
+                    booking.Color = "#F28705";
+                }
+            }
+
+            return Ok(bookings);
         }
+
 
         [HttpGet("get-field-list")]
         public IActionResult Getfieldlist()
@@ -187,9 +213,33 @@ namespace QLSB_APIs.Controllers
                                                          // Thêm các trường khác của bảng FootballField nếu cần
                         }
                     )
-                    .Where(item => item.Status == 1 && item.BookingId == bookingId)
+                    .Where(item => item.Status != 0 && item.BookingId == bookingId)
                     .ToList();
             return Ok(bookings);
+        }
+
+        [HttpGet("cancel-status-booking/{bookingId}")]
+        public IActionResult CancelStatusBooking(int bookingId)
+        {
+            if (bookingId == null)
+                return BadRequest("Id không tồn tại");
+            Booking bookings = _dbContext.Bookings
+                .Where(item => item.Status == -1 && item.BookingId == bookingId) // Chọn chỉ các FieldId có trạng thái bằng 1
+                .FirstOrDefault(); // Lấy FieldId đầu tiên
+            if(bookings != null) {
+                bookings.Status = 0;
+                _dbContext.SaveChanges();
+                return Ok(new ResultDTO()
+                    {
+                        message = "Lịch sân đã bị hủy do hết thời gian",
+
+                    });
+             }
+            return Ok(new ResultDTO()
+            {
+                message = "Lỗi",
+
+            }); ;
         }
 
     }

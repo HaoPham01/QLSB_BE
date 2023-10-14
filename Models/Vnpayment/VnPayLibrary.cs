@@ -136,7 +136,7 @@ namespace QLSB_APIs.Models.Vnpayment
             string ipAddress;
             try
             {
-                ipAddress = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+                ipAddress = context.Request.Headers["HTTP_X_FORWARDED_FOR"].FirstOrDefault();
 
                 if (string.IsNullOrEmpty(ipAddress) || (ipAddress.ToLower() == "unknown") || ipAddress.Length > 45)
                     ipAddress = context.Connection.RemoteIpAddress.ToString();
