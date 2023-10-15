@@ -11,6 +11,7 @@
         public string vnp_TransactionStatus { get; set; }
         public string vnp_ResponseCode { get; set; }
         public int vnp_TxnRef { get; set; }
+        public int vnp_Amount { get; set; }
 
     }
 

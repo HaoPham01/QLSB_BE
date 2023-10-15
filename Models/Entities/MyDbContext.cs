@@ -25,6 +25,8 @@ public partial class MyDbContext : DbContext
 
     public virtual DbSet<Footballfield> Footballfields { get; set; }
 
+    public virtual DbSet<Invoice> Invoices { get; set; }
+
     public virtual DbSet<News> News { get; set; }
 
     public virtual DbSet<Operatinghour> Operatinghours { get; set; }
@@ -34,6 +36,8 @@ public partial class MyDbContext : DbContext
     public virtual DbSet<Pricebooking> Pricebookings { get; set; }
 
     public virtual DbSet<Review> Reviews { get; set; }
+
+    public virtual DbSet<Service> Services { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -208,6 +212,48 @@ public partial class MyDbContext : DbContext
                 .HasConstraintName("footballfield_ibfk_1");
         });
 
+        modelBuilder.Entity<Invoice>(entity =>
+        {
+            entity.HasKey(e => e.InvoiceId).HasName("PRIMARY");
+
+            entity.ToTable("invoice");
+
+            entity.HasIndex(e => e.AdminId, "AdminId");
+
+            entity.HasIndex(e => e.BookingId, "BookingId");
+
+            entity.Property(e => e.InvoiceId).HasColumnType("int(11)");
+            entity.Property(e => e.AdminId)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("int(11)");
+            entity.Property(e => e.BookingId)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("int(11)");
+            entity.Property(e => e.Content)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("'current_timestamp()'")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Status).HasColumnType("int(10)");
+            entity.Property(e => e.TotalAmount)
+                .HasPrecision(10)
+                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.Type)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+
+            entity.HasOne(d => d.Admin).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.AdminId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("invoice_ibfk_2");
+
+            entity.HasOne(d => d.Booking).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.BookingId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("invoice_ibfk_1");
+        });
+
         modelBuilder.Entity<News>(entity =>
         {
             entity.HasKey(e => e.NewsId).HasName("PRIMARY");
@@ -308,7 +354,9 @@ public partial class MyDbContext : DbContext
                 .HasNoKey()
                 .ToTable("pricebooking");
 
-            entity.Property(e => e.Price).HasColumnType("int(11)");
+            entity.Property(e => e.Price)
+                .HasColumnType("int(11)")
+                .HasColumnName("price");
         });
 
         modelBuilder.Entity<Review>(entity =>
@@ -344,6 +392,33 @@ public partial class MyDbContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("reviews_ibfk_2");
+        });
+
+        modelBuilder.Entity<Service>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("service");
+
+            entity.HasIndex(e => e.BookingId, "BookingId");
+
+            entity.Property(e => e.BookingId)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("int(11)");
+            entity.Property(e => e.Price)
+                .HasPrecision(10)
+                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("int(11)");
+            entity.Property(e => e.Type)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+
+            entity.HasOne(d => d.Booking).WithMany()
+                .HasForeignKey(d => d.BookingId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("service_ibfk_1");
         });
 
         modelBuilder.Entity<User>(entity =>

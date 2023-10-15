@@ -96,7 +96,22 @@ namespace QLSB_APIs.Controllers
             var order = _dbContext.Bookings.FirstOrDefault(x => x.BookingId == payload.vnp_TxnRef);
                     if (payload.vnp_ResponseCode == "00" && payload.vnp_TransactionStatus == "00")
                     {
-                        order.Status = 1;
+                        var totalAmount = order.PriceBooking;
+                        var status = 0; //hoa don duoc thanh lap va da coc 30%
+                        if (totalAmount == payload.vnp_Amount / 100)
+                            status = -1; //hoa don duoc thanh toan day du tien san
+                        var newInvoice = new Invoice
+                        {
+                            InvoiceId = 0,
+                            BookingId = payload.vnp_TxnRef,
+                            Type = "thu",
+                            Content = "Khách hàng đặt sân",
+                            TotalAmount = payload.vnp_Amount/100,
+                            Status = status,
+                            CreateDate = DateTime.Now
+                        };
+                        order.Status = 1; //lich san duoc dat 
+                        _dbContext.Invoices.Add(newInvoice);
                         _dbContext.SaveChanges();
                         return Ok(new ResultDTO()
                         {

@@ -29,5 +29,7 @@ public partial class Admin
 
     public virtual ICollection<Footballfield> Footballfields { get; set; } = new List<Footballfield>();
 
+    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
     public virtual ICollection<News> News { get; set; } = new List<News>();
 }

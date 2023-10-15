@@ -297,8 +297,29 @@ namespace QLSB_APIs.Controllers
                             footballfield.FieldName, // Thêm trường tên sân bóng
                                                      // Thêm các trường khác của bảng FootballField nếu cần
                         }
+                    ).Join(
+                        _dbContext.Invoices,
+                        booking => booking.BookingId,
+                        invoice => invoice.BookingId,
+                        (booking, invoice) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.CreateDate,
+                            booking.UpdateDate,
+                            booking.FullName,
+                            booking.Phone,
+                            booking.FieldName,
+                            statusInvoice = invoice.Status,
+                            totalInvoice = invoice.TotalAmount
+                        }
                     )
-                    .Where(item => item.Status != 0 && item.FieldId == firstFieldId && item.StartTime.Value.Date == today)
+                    .Where(item => item.Status == 1 && item.statusInvoice != 1 && item.FieldId == firstFieldId && item.StartTime.Value.Date == today)
                     .OrderBy(item => item.StartTime) // Sắp xếp theo StartTime
                     .ToList();
             return Ok(bookings);
