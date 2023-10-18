@@ -5,6 +5,8 @@ namespace QLSB_APIs.Models.Entities;
 
 public partial class Service
 {
+    public int SvId { get; set; }
+
     public int? BookingId { get; set; }
 
     public int? Quantity { get; set; }

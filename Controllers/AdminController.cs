@@ -231,5 +231,16 @@ namespace QLSB_APIs.Controllers
             var id = admin.AdminId;
             return Ok(id);
         }
+        [HttpGet("get-name-by-email/{email}")]
+        public IActionResult GetNameByEmail(string email)
+        {
+            var admin = _authContext.Admins.FirstOrDefault(u => u.Email == email);
+            var name = admin.FullName;
+            return Ok(new ResultDTO()
+            {
+                message = name
+
+            });
+        }
     }
 }

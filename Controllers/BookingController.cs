@@ -115,11 +115,11 @@ namespace QLSB_APIs.Controllers
         {
            var fieldList = _dbContext.Footballfields
              .Where(item => item.Status == 1)
-             .Select(item => new
+             .Select(footballfield => new
              {
-                 item.FieldId,
-                 item.FieldName,
-                 item.Type
+                 footballfield.FieldId,
+                 footballfield.FieldName,
+                 footballfield.Type
              })
              .ToList();
 
@@ -137,14 +137,6 @@ namespace QLSB_APIs.Controllers
             return Ok(gia);
         }
 
-        //[HttpPost("add-booking2")]
-        //public IActionResult AddBooking2([FromBody] BookingDTO bookingDTO)
-        //{
-        //    if (bookingDTO == null)
-        //        return BadRequest();
-        //    _dbContext.Database.ExecuteSqlRaw("CALL AddBooking({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8})", bookingDTO.BookingId, bookingDTO.UserId, bookingDTO.FieldId, bookingDTO.PriceBooking, bookingDTO.StartTime, bookingDTO.EndTime, bookingDTO.Status, bookingDTO.CreateDate, bookingDTO.UpdateDate);
-        //    return Ok();
-        //}
 
         [HttpPost("add-booking")]
         public IActionResult AddBooking([FromBody] BookingDTO bookingDTO)
@@ -315,13 +307,165 @@ namespace QLSB_APIs.Controllers
                             booking.FullName,
                             booking.Phone,
                             booking.FieldName,
+                            invoice.PayOnline,
                             statusInvoice = invoice.Status,
-                            totalInvoice = invoice.TotalAmount
+                            totalInvoice = invoice.TotalAmount,
+                            idInvoice = invoice.InvoiceId,
+                            //adminId = invoice.AdminId,
                         }
                     )
                     .Where(item => item.Status == 1 && item.statusInvoice != 1 && item.FieldId == firstFieldId && item.StartTime.Value.Date == today)
                     .OrderBy(item => item.StartTime) // Sắp xếp theo StartTime
                     .ToList();
+            return Ok(bookings);
+        }
+
+        [HttpGet("staff-get-booking/{fieldId}")]
+        public IActionResult StaffGetBooking(int fieldId)
+        {
+            DateTime today = DateTime.Today;
+            var bookings = _dbContext.Bookings
+                    .Join(
+                        _dbContext.Users,
+                        booking => booking.UserId,
+                        user => user.UserId,
+                        (booking, user) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.CreateDate,
+                            booking.UpdateDate,
+                            user.FullName,
+                            user.Phone
+                        }
+                    )
+                    .Join(
+                        _dbContext.Footballfields,
+                        booking => booking.FieldId,
+                        footballfield => footballfield.FieldId,
+                        (booking, footballfield) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.CreateDate,
+                            booking.UpdateDate,
+                            booking.FullName,
+                            booking.Phone,
+                            footballfield.FieldName, // Thêm trường tên sân bóng
+                                                     // Thêm các trường khác của bảng FootballField nếu cần
+                        }
+                    ).Join(
+                        _dbContext.Invoices,
+                        booking => booking.BookingId,
+                        invoice => invoice.BookingId,
+                        (booking, invoice) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.CreateDate,
+                            booking.UpdateDate,
+                            booking.FullName,
+                            booking.Phone,
+                            booking.FieldName,
+                            invoice.PayOnline,
+                            statusInvoice = invoice.Status,
+                            totalInvoice = invoice.TotalAmount,
+                            idInvoice = invoice.InvoiceId,
+                            //adminId = invoice.AdminId,
+                        }
+                    )
+                    .Where(item => item.Status == 1 && item.statusInvoice != 1 && item.FieldId == fieldId && item.StartTime.Value.Date == today)
+                    .OrderBy(item => item.StartTime) // Sắp xếp theo StartTime
+                    .ToList();
+            return Ok(bookings);
+        }
+
+        [HttpGet("staff-search-booking/{keyword}")]
+        public IActionResult Search(string keyword)
+        {
+            DateTime today = DateTime.Today;
+            var bookings = _dbContext.Bookings
+        .Join(
+            _dbContext.Users,
+            booking => booking.UserId,
+            user => user.UserId,
+            (booking, user) => new
+            {
+                booking.BookingId,
+                booking.UserId,
+                booking.FieldId,
+                booking.PriceBooking,
+                booking.StartTime,
+                booking.EndTime,
+                booking.Status,
+                booking.CreateDate,
+                booking.UpdateDate,
+                user.FullName,
+                user.Phone
+            }
+        )
+        .Join(
+            _dbContext.Footballfields,
+            booking => booking.FieldId,
+            footballfield => footballfield.FieldId,
+            (booking, footballfield) => new
+            {
+                booking.BookingId,
+                booking.UserId,
+                booking.FieldId,
+                booking.PriceBooking,
+                booking.StartTime,
+                booking.EndTime,
+                booking.Status,
+                booking.CreateDate,
+                booking.UpdateDate,
+                booking.FullName,
+                booking.Phone,
+                footballfield.FieldName, // Thêm trường tên sân bóng
+                                         // Thêm các trường khác của bảng FootballField nếu cần
+            }
+        ).Join(
+            _dbContext.Invoices,
+            booking => booking.BookingId,
+            invoice => invoice.BookingId,
+            (booking, invoice) => new
+            {
+                booking.BookingId,
+                booking.UserId,
+                booking.FieldId,
+                booking.PriceBooking,
+                booking.StartTime,
+                booking.EndTime,
+                booking.Status,
+                booking.CreateDate,
+                booking.UpdateDate,
+                booking.FullName,
+                booking.Phone,
+                booking.FieldName,
+                statusInvoice = invoice.Status,
+                totalInvoice = invoice.TotalAmount,
+                idInvoice = invoice.InvoiceId,
+                //adminId = invoice.AdminId,
+            }
+        )
+        .Where(item => item.Status == 1 && item.statusInvoice != 1 && item.Phone.Contains(keyword) && item.StartTime.Value.Date == today)
+        .OrderBy(item => item.StartTime) // Sắp xếp theo StartTime
+        .ToList();
             return Ok(bookings);
         }
     }

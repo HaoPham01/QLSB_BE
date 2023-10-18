@@ -106,7 +106,7 @@ namespace QLSB_APIs.Controllers
                             BookingId = payload.vnp_TxnRef,
                             Type = "thu",
                             Content = "Khách hàng đặt sân",
-                            TotalAmount = payload.vnp_Amount/100,
+                            PayOnline = payload.vnp_Amount/100,
                             Status = status,
                             CreateDate = DateTime.Now
                         };

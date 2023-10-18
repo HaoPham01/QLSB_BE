@@ -235,6 +235,9 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("'current_timestamp()'")
                 .HasColumnType("datetime");
+            entity.Property(e => e.PayOnline)
+                .HasPrecision(10)
+                .HasDefaultValueSql("'NULL'");
             entity.Property(e => e.Status).HasColumnType("int(10)");
             entity.Property(e => e.TotalAmount)
                 .HasPrecision(10)
@@ -396,12 +399,13 @@ public partial class MyDbContext : DbContext
 
         modelBuilder.Entity<Service>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("service");
+            entity.HasKey(e => e.SvId).HasName("PRIMARY");
+
+            entity.ToTable("service");
 
             entity.HasIndex(e => e.BookingId, "BookingId");
 
+            entity.Property(e => e.SvId).HasColumnType("int(11)");
             entity.Property(e => e.BookingId)
                 .HasDefaultValueSql("'NULL'")
                 .HasColumnType("int(11)");
@@ -415,7 +419,7 @@ public partial class MyDbContext : DbContext
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'NULL'");
 
-            entity.HasOne(d => d.Booking).WithMany()
+            entity.HasOne(d => d.Booking).WithMany(p => p.Services)
                 .HasForeignKey(d => d.BookingId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("service_ibfk_1");

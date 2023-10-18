@@ -15,6 +15,8 @@ public partial class Invoice
 
     public string? Content { get; set; }
 
+    public decimal? PayOnline { get; set; }
+
     public decimal? TotalAmount { get; set; }
 
     public int Status { get; set; }

@@ -2,8 +2,12 @@
 {
     public class InvoiceDTO
     {
-        public int numberInvoice { get; set; }
-        public string fieldName { get; set; }
-        public int vnp_TxnRef { get; set; }
+        public int InvoiceId { get; set; }
+
+        public string? adminEmail { get; set; }
+
+        public decimal? TotalAmount { get; set; }
+
+        public DateTime CreateDate { get; set; }
     }
 }

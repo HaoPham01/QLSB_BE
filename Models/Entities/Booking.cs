@@ -27,5 +27,7 @@ public partial class Booking
 
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
+    public virtual ICollection<Service> Services { get; set; } = new List<Service>();
+
     public virtual User? User { get; set; }
 }
