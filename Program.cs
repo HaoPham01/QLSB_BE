@@ -25,8 +25,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IFootballfieldRepository, FootballfieldRepository>();
 builder.Services.AddScoped<IFootballfieldService, FootballfieldService>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>(); 
+builder.Services.AddScoped<IFieldimageRepository, FieldimageRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IFieldimageService, FieldimageService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -73,5 +75,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.Run();
