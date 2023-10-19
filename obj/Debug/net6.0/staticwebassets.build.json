@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "ubgsZTX5L9MnhYA4ECHMyZmms7VhsEZAeX3CVdu8IKA=",
+  "Hash": "FjIWj6NsFHmPkx7PISawH8BL0koqBfte+kDrOji3nZ4=",
   "Source": "QLSB_APIs",
   "BasePath": "_content/QLSB_APIs",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "QLSB_APIs\\wwwroot",
+      "Source": "QLSB_APIs",
+      "ContentRoot": "E:\\MyProjects\\QLSB\\QLSB_BE\\wwwroot\\",
+      "BasePath": "_content/QLSB_APIs",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

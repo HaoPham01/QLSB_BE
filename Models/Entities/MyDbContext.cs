@@ -160,7 +160,7 @@ public partial class MyDbContext : DbContext
 
         modelBuilder.Entity<Fieldimage>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+           entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("fieldimages");
 
@@ -178,6 +178,7 @@ public partial class MyDbContext : DbContext
                 .HasForeignKey(d => d.FieldId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fieldimages_ibfk_1");
+            
         });
 
         modelBuilder.Entity<Footballfield>(entity =>

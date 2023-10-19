@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Asus\\Desktop\\LuanVan\\QuanLySanBong\\WebAPIs\\QLSB_APIs\\QLSB_APIs\\QLSB_APIs.csproj": {}
+    "E:\\MyProjects\\QLSB\\QLSB_BE\\QLSB_APIs.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Asus\\Desktop\\LuanVan\\QuanLySanBong\\WebAPIs\\QLSB_APIs\\QLSB_APIs\\QLSB_APIs.csproj": {
+    "E:\\MyProjects\\QLSB\\QLSB_BE\\QLSB_APIs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Asus\\Desktop\\LuanVan\\QuanLySanBong\\WebAPIs\\QLSB_APIs\\QLSB_APIs\\QLSB_APIs.csproj",
+        "projectUniqueName": "E:\\MyProjects\\QLSB\\QLSB_BE\\QLSB_APIs.csproj",
         "projectName": "QLSB_APIs",
-        "projectPath": "C:\\Users\\Asus\\Desktop\\LuanVan\\QuanLySanBong\\WebAPIs\\QLSB_APIs\\QLSB_APIs\\QLSB_APIs.csproj",
-        "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Asus\\Desktop\\LuanVan\\QuanLySanBong\\WebAPIs\\QLSB_APIs\\QLSB_APIs\\obj\\",
+        "projectPath": "E:\\MyProjects\\QLSB\\QLSB_BE\\QLSB_APIs.csproj",
+        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+        "outputPath": "E:\\MyProjects\\QLSB\\QLSB_BE\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -110,7 +108,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.414\\RuntimeIdentifierGraph.json"
         }
       }
     }
