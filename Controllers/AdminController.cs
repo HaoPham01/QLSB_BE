@@ -166,12 +166,11 @@ namespace QLSB_APIs.Controllers
         {
            if(CheckEmailExist(admin.Email))
             return BadRequest(new {Message = "Email already exist!"});
-
             //var pass = CheckPasswordStrength(admin.Password);
             //if (!string.IsNullOrEmpty(pass))
             //    return BadRequest(new { Message = pass.ToString() });
 
-           _adminService.AddAdmin(admin);
+            _adminService.AddAdmin(admin);
            return Ok(admin);
         }
 
@@ -240,6 +239,53 @@ namespace QLSB_APIs.Controllers
             {
                 message = name
 
+            });
+        }
+
+
+        [HttpGet("get-admin/{id}")]
+        public IActionResult GetAdmin(int id)
+        {
+            var admin = _authContext.Admins
+                            .Select(
+                                user => new
+                                {
+                                    user.AdminId,
+                                    user.Email,
+                                    user.FullName,
+                                    user.Role,
+                                    user.Status,
+                                    user.CreateDate,
+                                    user.UpdateDate
+                                }
+                            ).Where(item => item.Status == 1 && item.AdminId == id)
+                            .ToList();
+            return Ok(admin);
+        }
+
+        [HttpPost("change-password-admin")]
+        public IActionResult ChangePasswordAdmin(ChangePasswordDTO change)
+        {
+
+            var admin = _authContext.Admins.FirstOrDefault(a => a.Email == change.Email);
+            if (admin == null)
+            {
+                return NotFound(new { Message = "Tài khoản không tồn tại!" });
+            }
+            if (!PasswordHasher.VerifyPassword(change.OldPassword, admin.Password))
+            {
+                return BadRequest(new { Message = "Mật khẩu cũ không chính xác" });
+            }
+            if (change.NewPassword != change.ConfirmPassword)
+            {
+                return BadRequest(new { Message = "Mật khẩu mới không khớp" });
+            }
+            admin.Password = PasswordHasher.HashPassword(change.NewPassword);
+            _authContext.SaveChanges();
+            return Ok(new
+            {
+                StatusCode = 200,
+                Message = "Mật khẩu đã được thay đổi"
             });
         }
     }

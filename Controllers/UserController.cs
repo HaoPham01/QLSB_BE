@@ -177,6 +177,27 @@ namespace QLSB_APIs.Controllers
             return Ok(name);
         }
 
+        [HttpGet("get-user/{id}")]
+        public IActionResult GetAllUsers(int id)
+        {
+            var user = _authContext.Users
+                            .Select(
+                                user => new
+                                {
+
+                                    user.UserId,
+                                    user.Email,
+                                    user.FullName,
+                                    user.Address,
+                                    user.Phone,
+                                    user.Status,
+                                    user.CreateDate,
+                                    user.UpdateDate
+                                }
+                            ).Where(item => item.Status == 1 && item.UserId == id)
+                            .ToList();
+            return Ok(user);
+        }
 
         private string CheckPasswordStrength(string password)
         {
@@ -321,6 +342,32 @@ namespace QLSB_APIs.Controllers
             user.Password = PasswordHasher.HashPassword(resetPasswordDTO.NewPassword);
             _authContext.Entry(user).State = EntityState.Modified;
              _authContext.SaveChanges();
+            return Ok(new
+            {
+                StatusCode = 200,
+                Message = "Mật khẩu đã được thay đổi"
+            });
+        }
+
+        [HttpPost("change-password")]
+        public IActionResult ChangePassword(ChangePasswordDTO change)
+        {
+   
+            var user = _authContext.Users.FirstOrDefault(a => a.Email == change.Email);
+            if (user == null)
+            {
+                return NotFound(new { Message = "Tài khoản không tồn tại!" });
+            }
+            if (!PasswordHasher.VerifyPassword(change.OldPassword, user.Password))
+            {
+                return BadRequest(new { Message = "Mật khẩu cũ không chính xác" });
+            }
+            if (change.NewPassword != change.ConfirmPassword)
+            {
+                return BadRequest(new { Message = "Mật khẩu mới không khớp" });
+            }
+            user.Password = PasswordHasher.HashPassword(change.NewPassword);
+            _authContext.SaveChanges();
             return Ok(new
             {
                 StatusCode = 200,

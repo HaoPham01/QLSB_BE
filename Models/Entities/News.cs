@@ -7,13 +7,15 @@ public partial class News
 {
     public int NewsId { get; set; }
 
-    public string Url { get; set; } = null!;
+    public int AdminId { get; set; }
 
     public string Title { get; set; } = null!;
 
     public string Content { get; set; } = null!;
 
-    public int AdminId { get; set; }
+    public string? Url { get; set; }
+
+    public string? PublicId { get; set; }
 
     public DateTime CreateDate { get; set; }
 

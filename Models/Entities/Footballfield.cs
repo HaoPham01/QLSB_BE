@@ -13,6 +13,8 @@ public partial class Footballfield
 
     public string? Type { get; set; }
 
+    public string? Content { get; set; }
+
     public int? Status { get; set; }
 
     public DateTime? CreateDate { get; set; }
@@ -23,11 +25,11 @@ public partial class Footballfield
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
+    public virtual ICollection<Expensereceipt> Expensereceipts { get; set; } = new List<Expensereceipt>();
+
     public virtual ICollection<Favoritefield> Favoritefields { get; set; } = new List<Favoritefield>();
 
     public virtual ICollection<Fieldimage> Fieldimages { get; set; } = new List<Fieldimage>();
 
     public virtual ICollection<Price> Prices { get; set; } = new List<Price>();
-
-    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

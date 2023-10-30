@@ -19,6 +19,8 @@ public partial class MyDbContext : DbContext
 
     public virtual DbSet<Booking> Bookings { get; set; }
 
+    public virtual DbSet<Expensereceipt> Expensereceipts { get; set; }
+
     public virtual DbSet<Favoritefield> Favoritefields { get; set; }
 
     public virtual DbSet<Fieldimage> Fieldimages { get; set; }
@@ -38,6 +40,8 @@ public partial class MyDbContext : DbContext
     public virtual DbSet<Review> Reviews { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
+
+    public virtual DbSet<Timebooking> Timebookings { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -127,6 +131,45 @@ public partial class MyDbContext : DbContext
                 .HasConstraintName("booking_ibfk_1");
         });
 
+        modelBuilder.Entity<Expensereceipt>(entity =>
+        {
+            entity.HasKey(e => e.ErId).HasName("PRIMARY");
+
+            entity.ToTable("expensereceipts");
+
+            entity.HasIndex(e => e.AdminId, "AdminId");
+
+            entity.HasIndex(e => e.FieldId, "Footballfield");
+
+            entity.Property(e => e.ErId).HasColumnType("int(11)");
+            entity.Property(e => e.AdminId)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("int(11)");
+            entity.Property(e => e.Content)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("'current_timestamp()'")
+                .HasColumnType("datetime");
+            entity.Property(e => e.FieldId)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("int(11)");
+            entity.Property(e => e.TotalAmount).HasPrecision(10);
+            entity.Property(e => e.Type)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
+
+            entity.HasOne(d => d.Admin).WithMany(p => p.Expensereceipts)
+                .HasForeignKey(d => d.AdminId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("ER_ibfk_2");
+
+            entity.HasOne(d => d.Field).WithMany(p => p.Expensereceipts)
+                .HasForeignKey(d => d.FieldId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("ER_ibfk_1");
+        });
+
         modelBuilder.Entity<Favoritefield>(entity =>
         {
             entity.HasKey(e => e.FavoriteId).HasName("PRIMARY");
@@ -173,6 +216,7 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.PublicId).HasMaxLength(255);
 
             entity.HasOne(d => d.Field).WithMany(p => p.Fieldimages)
                 .HasForeignKey(d => d.FieldId)
@@ -190,6 +234,9 @@ public partial class MyDbContext : DbContext
 
             entity.Property(e => e.FieldId).HasColumnType("int(11)");
             entity.Property(e => e.AdminId).HasColumnType("int(11)");
+            entity.Property(e => e.Content)
+                .HasDefaultValueSql("'NULL'")
+                .HasColumnType("text");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("'current_timestamp()'")
                 .HasColumnType("datetime");
@@ -229,22 +276,12 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.BookingId)
                 .HasDefaultValueSql("'NULL'")
                 .HasColumnType("int(11)");
-            entity.Property(e => e.Content)
-                .HasDefaultValueSql("'NULL'")
-                .HasColumnType("text");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("'current_timestamp()'")
                 .HasColumnType("datetime");
-            entity.Property(e => e.PayOnline)
-                .HasPrecision(10)
-                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.PayOnline).HasPrecision(10);
             entity.Property(e => e.Status).HasColumnType("int(10)");
-            entity.Property(e => e.TotalAmount)
-                .HasPrecision(10)
-                .HasDefaultValueSql("'NULL'");
-            entity.Property(e => e.Type)
-                .HasMaxLength(255)
-                .HasDefaultValueSql("'NULL'");
+            entity.Property(e => e.TotalAmount).HasPrecision(10);
 
             entity.HasOne(d => d.Admin).WithMany(p => p.Invoices)
                 .HasForeignKey(d => d.AdminId)
@@ -271,11 +308,16 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("'current_timestamp()'")
                 .HasColumnType("datetime");
+            entity.Property(e => e.PublicId)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UpdateDate)
                 .HasDefaultValueSql("'current_timestamp()'")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Url).HasMaxLength(255);
+            entity.Property(e => e.Url)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("'NULL'");
 
             entity.HasOne(d => d.Admin).WithMany(p => p.News)
                 .HasForeignKey(d => d.AdminId)
@@ -368,33 +410,20 @@ public partial class MyDbContext : DbContext
 
             entity.ToTable("reviews");
 
-            entity.HasIndex(e => e.FieldId, "FieldId");
-
-            entity.HasIndex(e => e.UserId, "UserId");
+            entity.HasIndex(e => e.BookingId, "BookingId");
 
             entity.Property(e => e.ReviewId).HasColumnType("int(11)");
+            entity.Property(e => e.BookingId).HasColumnType("int(11)");
             entity.Property(e => e.Comment)
                 .HasDefaultValueSql("'NULL'")
                 .HasColumnType("text");
-            entity.Property(e => e.CreateDate)
-                .HasDefaultValueSql("'current_timestamp()'")
-                .HasColumnType("datetime");
-            entity.Property(e => e.FieldId).HasColumnType("int(11)");
-            entity.Property(e => e.Rating).HasColumnType("int(11)");
-            entity.Property(e => e.UpdateDate)
-                .HasDefaultValueSql("'current_timestamp()'")
-                .HasColumnType("datetime");
-            entity.Property(e => e.UserId).HasColumnType("int(11)");
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Field).WithMany(p => p.Reviews)
-                .HasForeignKey(d => d.FieldId)
+            entity.HasOne(d => d.Booking).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.BookingId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("reviews_ibfk_1");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Reviews)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("reviews_ibfk_2");
         });
 
         modelBuilder.Entity<Service>(entity =>
@@ -423,6 +452,16 @@ public partial class MyDbContext : DbContext
                 .HasForeignKey(d => d.BookingId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("service_ibfk_1");
+        });
+
+        modelBuilder.Entity<Timebooking>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("timebooking");
+
+            entity.Property(e => e.FieldName).HasMaxLength(255);
+            entity.Property(e => e.TotalBookingTime).HasColumnType("int(11)");
         });
 
         modelBuilder.Entity<User>(entity =>

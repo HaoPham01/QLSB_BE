@@ -7,11 +7,7 @@ public partial class Review
 {
     public int ReviewId { get; set; }
 
-    public int FieldId { get; set; }
-
-    public int UserId { get; set; }
-
-    public int Rating { get; set; }
+    public int BookingId { get; set; }
 
     public string? Comment { get; set; }
 
@@ -19,7 +15,5 @@ public partial class Review
 
     public DateTime UpdateDate { get; set; }
 
-    public virtual Footballfield Field { get; set; } = null!;
-
-    public virtual User User { get; set; } = null!;
+    public virtual Booking Booking { get; set; } = null!;
 }

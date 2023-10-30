@@ -60,6 +60,17 @@ namespace QLSB_APIs.Mappings
                .ForMember(dest => dest.Status, otp => otp.MapFrom(src => src.Status))
                .ForMember(dest => dest.CreateDate, otp => otp.MapFrom(src => src.CreateDate))
                .ForMember(dest => dest.UpdateDate, otp => otp.MapFrom(src => src.UpdateDate));
+            CreateMap<Fieldimage, ImageDTO>()
+               .ForMember(dest => dest.Id, otp => otp.MapFrom(src => src.Id))
+               .ForMember(dest => dest.FieldId, otp => otp.MapFrom(src => src.FieldId))
+               .ForMember(dest => dest.PublicId, otp => otp.MapFrom(src => src.PublicId))
+               .ForMember(dest => dest.ImageUrl, otp => otp.MapFrom(src => src.ImageUrl));
+            CreateMap<Review, ReviewDTO>()
+               .ForMember(dest => dest.ReviewId, otp => otp.MapFrom(src => src.ReviewId))
+               .ForMember(dest => dest.BookingId, otp => otp.MapFrom(src => src.BookingId))
+               .ForMember(dest => dest.Comment, otp => otp.MapFrom(src => src.Comment))
+               .ForMember(dest => dest.CreateDate, otp => otp.MapFrom(src => src.CreateDate))
+               .ForMember(dest => dest.UpdateDate, otp => otp.MapFrom(src => src.UpdateDate));
         }
     }
 }

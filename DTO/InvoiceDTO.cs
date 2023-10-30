@@ -6,7 +6,7 @@
 
         public string? adminEmail { get; set; }
 
-        public decimal? TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
 
         public DateTime CreateDate { get; set; }
     }

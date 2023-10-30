@@ -9,6 +9,8 @@ public partial class Fieldimage
 
     public int? FieldId { get; set; }
 
+    public string PublicId { get; set; } = null!;
+
     public string? ImageUrl { get; set; }
 
     public virtual Footballfield? Field { get; set; }

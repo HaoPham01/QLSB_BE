@@ -1,16 +1,12 @@
 
-using System.Configuration;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using MySql.Data.MySqlClient;
 using QLSB_APIs.Models.Entities;
 using QLSB_APIs.Repository;
 using QLSB_APIs.Services;
 
-using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +23,8 @@ builder.Services.AddScoped<IFootballfieldService, FootballfieldService>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>(); 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

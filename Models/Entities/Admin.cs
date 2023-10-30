@@ -27,6 +27,8 @@ public partial class Admin
 
     public DateTime? UpdateDate { get; set; }
 
+    public virtual ICollection<Expensereceipt> Expensereceipts { get; set; } = new List<Expensereceipt>();
+
     public virtual ICollection<Footballfield> Footballfields { get; set; } = new List<Footballfield>();
 
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();

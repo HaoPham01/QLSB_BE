@@ -30,10 +30,9 @@ namespace QLSB_APIs.Controllers
         public IActionResult GetBooking()
         {
             var firstFieldId = _dbContext.Footballfields
-                .Where(field => field.Status == 1) // Chọn chỉ các FieldId có trạng thái bằng 1
-                .OrderBy(field => field.FieldId) // Sắp xếp theo FieldId tăng dần
-                .Select(field => field.FieldId) // Chọn chỉ mục FieldId
-                .FirstOrDefault(); // Lấy FieldId đầu tiên
+                .Where(field => field.Status == 1)
+                .Select(field => field.FieldId)
+                .First();
 
             var bookings = _dbContext.Bookings
                 .Join(
@@ -111,7 +110,7 @@ namespace QLSB_APIs.Controllers
 
 
         [HttpGet("get-field-list")]
-        public IActionResult Getfieldlist()
+        public IActionResult GetFieldList()
         {
            var fieldList = _dbContext.Footballfields
              .Where(item => item.Status == 1)
@@ -219,8 +218,8 @@ namespace QLSB_APIs.Controllers
                 return BadRequest("Id không tồn tại");
             Booking bookings = _dbContext.Bookings
                 .Where(item => item.Status == -1 && item.BookingId == bookingId) // Chọn chỉ các FieldId có trạng thái bằng 1
-                .FirstOrDefault(); // Lấy FieldId đầu tiên
-            if(bookings != null) {
+                .First(); // Lấy FieldId đầu tiên
+            if (bookings != null) {
                 bookings.Status = 0;
                 _dbContext.SaveChanges();
                 return Ok(new ResultDTO()
@@ -248,7 +247,7 @@ namespace QLSB_APIs.Controllers
                 .Where(field => field.Status == 1) // Chọn chỉ các FieldId có trạng thái bằng 1
                 .OrderBy(field => field.FieldId) // Sắp xếp theo FieldId tăng dần
                 .Select(field => field.FieldId) // Chọn chỉ mục FieldId
-                .FirstOrDefault(); // Lấy FieldId đầu tiên
+                .First(); ; // Lấy FieldId đầu tiên
             var bookings = _dbContext.Bookings
                     .Join(
                         _dbContext.Users,

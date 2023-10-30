@@ -104,8 +104,6 @@ namespace QLSB_APIs.Controllers
                         {
                             InvoiceId = 0,
                             BookingId = payload.vnp_TxnRef,
-                            Type = "thu",
-                            Content = "Khách hàng đặt sân",
                             PayOnline = payload.vnp_Amount/100,
                             Status = status,
                             CreateDate = DateTime.Now

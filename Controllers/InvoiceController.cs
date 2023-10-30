@@ -31,7 +31,7 @@ namespace QLSB_APIs.Controllers
                 .Where(field => field.Status == 1) // Chọn chỉ các FieldId có trạng thái bằng 1
                 .OrderBy(field => field.FieldId) // Sắp xếp theo FieldId tăng dần
                 .Select(field => field.FieldId) // Chọn chỉ mục FieldId
-                .FirstOrDefault(); // Lấy FieldId đầu tiên
+                .First(); // Lấy FieldId đầu tiên
             var bookings = _dbContext.Bookings
                     .Join(
                         _dbContext.Users,
@@ -162,6 +162,7 @@ namespace QLSB_APIs.Controllers
             }
             invoice.AdminId = adminId;
             invoice.Status = 1;
+            invoice.TotalAmount = invoice.PayOnline;
             _dbContext.SaveChanges();
             return Ok(invoice);
         }
@@ -175,13 +176,7 @@ namespace QLSB_APIs.Controllers
             {
                 today = date.Date;
             }
-            //DateTime today = date.Date;
-            var firstFieldId = _dbContext.Footballfields
-                .Where(field => field.Status == 1) // Chọn chỉ các FieldId có trạng thái bằng 1
-                .OrderBy(field => field.FieldId) // Sắp xếp theo FieldId tăng dần
-                .Select(field => field.FieldId) // Chọn chỉ mục FieldId
-                .FirstOrDefault(); // Lấy FieldId đầu tiên
-            var bookings = _dbContext.Bookings
+            var invoices = _dbContext.Bookings
                     .Join(
                         _dbContext.Users,
                         booking => booking.UserId,
@@ -270,13 +265,113 @@ namespace QLSB_APIs.Controllers
                     .Where(item => item.statusInvoice == 1 && item.createDate.Date == today)
                     .OrderBy(item => item.createDate) // Sắp xếp theo StartTime
                     .ToList();
-            if(bookings == null)
+            if(invoices == null)
                 return Ok(new ResultDTO()
                 {
                     message = "Không có hóa đơn trong ngày",
 
                 });
-            return Ok(bookings);
+            return Ok(invoices);
         }
+
+
+
+
+
+        [HttpGet("search-invoice/{keyword}")]
+        public IActionResult SearchInvoice(string keyword)
+        {
+            var keywordInt = int.Parse(keyword);
+            var invoices = _dbContext.Bookings
+                    .Join(
+                        _dbContext.Users,
+                        booking => booking.UserId,
+                        user => user.UserId,
+                        (booking, user) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            user.FullName,
+                            user.Phone
+                        }
+                    )
+                    .Join(
+                        _dbContext.Footballfields,
+                        booking => booking.FieldId,
+                        footballfield => footballfield.FieldId,
+                        (booking, footballfield) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.FullName,
+                            booking.Phone,
+                            footballfield.FieldName, // Thêm trường tên sân bóng
+                                                     // Thêm các trường khác của bảng FootballField nếu cần
+                        }
+                    ).Join(
+                        _dbContext.Invoices,
+                        booking => booking.BookingId,
+                        invoice => invoice.BookingId,
+                        (booking, invoice) => new
+                        {
+                            booking.BookingId,
+                            booking.UserId,
+                            booking.FieldId,
+                            booking.PriceBooking,
+                            booking.StartTime,
+                            booking.EndTime,
+                            booking.Status,
+                            booking.FullName,
+                            booking.Phone,
+                            booking.FieldName,
+                            invoice.PayOnline,
+                            statusInvoice = invoice.Status,
+                            pricePay = invoice.TotalAmount,
+                            idInvoice = invoice.InvoiceId,
+                            adminId = invoice.AdminId,
+                            createDate = invoice.CreateDate
+
+                        }
+                    ).Join(
+                        _dbContext.Admins,
+                        invoice => invoice.adminId,
+                        admin => admin.AdminId,
+                        (invoice, admin) => new
+                        {
+                            invoice.BookingId,
+                            invoice.UserId,
+                            invoice.FieldId,
+                            invoice.PriceBooking,
+                            invoice.StartTime,
+                            invoice.EndTime,
+                            invoice.Status,
+                            invoice.FullName,
+                            invoice.Phone,
+                            invoice.FieldName,
+                            invoice.PayOnline,
+                            invoice.statusInvoice,
+                            invoice.pricePay,
+                            invoice.idInvoice,
+                            invoice.adminId,
+                            invoice.createDate,
+                            adminName = admin.FullName
+
+                        }
+                    )
+                    .Where(item => item.statusInvoice == 1 && item.idInvoice == keywordInt)
+                    .ToList();
+            return Ok(invoices);
+        }
+
     }
 }
