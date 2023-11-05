@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Globalization;
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Mvc;
@@ -235,11 +236,76 @@ namespace QLSB_APIs.Controllers
             }); ;
         }
 
+        [HttpPost("search-empty-booking")]
+        public IActionResult SearchEmptyBooking(SearchEmptyBookingDTO bookingDTO)
+        {
+            DateTime selectedDay = DateTime.ParseExact(bookingDTO.Day, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            // Chuyển đổi chuỗi giờ bắt đầu thành số nguyên
+            int startHour = bookingDTO.Start;
+            // Tính thời gian kết thúc dựa trên giờ bắt đầu và tổng thời gian
+            //DateTime startTime = selectedDay.AddHours(startHour);
+            DateTime startTime = new DateTime(selectedDay.Year, selectedDay.Month, selectedDay.Day, startHour, bookingDTO.Minutes, 0);
+            int endHour = startHour + ((bookingDTO.TotalTime + bookingDTO.Minutes) / 60);
+            int endMinute = (bookingDTO.TotalTime + bookingDTO.Minutes) % 60;
+
+            // Tạo đối tượng DateTime cho EndTime
+            DateTime endTime = new DateTime(selectedDay.Year, selectedDay.Month, selectedDay.Day, endHour, endMinute, 0);
 
 
 
-        //STAFF-BOOKING--------------------------------------------------------------------
-        [HttpGet("staff-get-booking")]
+            List<Footballfield> availableFields = new List<Footballfield>();
+            // Lấy danh sách tất cả các sân
+            var allFields = _dbContext.Footballfields.Where(item => item.Type == bookingDTO.Type && item.Status == 1).ToList();
+
+            foreach (var field in allFields)
+            {
+                // Kiểm tra xem có bất kỳ đặt sân nào nằm trong khoảng thời gian này không
+                bool isAvailable = !_dbContext.Bookings
+                    .Any(booking =>
+                        booking.Status != 0 && 
+                        booking.FieldId == field.FieldId && (
+                        (startTime >= booking.StartTime && startTime < booking.EndTime) ||
+                        (endTime > booking.StartTime && endTime <= booking.EndTime)));
+
+                if (isAvailable)
+                {
+
+                    availableFields.Add(field);
+                }
+            }
+
+            return Ok(availableFields);
+        }
+
+
+
+        [HttpPost("date-conversion")]
+        public IActionResult DateConversion(SearchEmptyBookingDTO bookingDTO)
+        {
+            DateTime selectedDay = DateTime.ParseExact(bookingDTO.Day, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            // Chuyển đổi chuỗi giờ bắt đầu thành số nguyên
+            int startHour = bookingDTO.Start;
+            // Tính thời gian kết thúc dựa trên giờ bắt đầu và tổng thời gian
+            //DateTime startTime = selectedDay.AddHours(startHour);
+            DateTime startTime = new DateTime(selectedDay.Year, selectedDay.Month, selectedDay.Day, startHour, bookingDTO.Minutes, 0);
+            int endHour = startHour + ((bookingDTO.TotalTime + bookingDTO.Minutes) / 60);
+            int endMinute = (bookingDTO.TotalTime + bookingDTO.Minutes) % 60;
+
+            // Tạo đối tượng DateTime cho EndTime
+            DateTime endTime = new DateTime(selectedDay.Year, selectedDay.Month, selectedDay.Day, endHour, endMinute, 0);
+
+            return Ok(new
+            {
+                startTime = startTime,
+                endTime = endTime
+            });
+
+        }
+
+            //STAFF-BOOKING--------------------------------------------------------------------
+            [HttpGet("staff-get-booking")]
         public IActionResult StaffGetBooking()
         {
             DateTime today = DateTime.Today;

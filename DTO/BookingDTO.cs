@@ -35,4 +35,15 @@
         public string Title { get; set; }
         public string Color { get; set; }
     }
+
+    public class SearchEmptyBookingDTO
+    {
+        public string Type { get; set; }
+
+        public string Day { get; set; }
+
+        public int Start { get; set; }
+        public int Minutes { get; set; }
+        public int TotalTime { get; set; }
+    }
 }
